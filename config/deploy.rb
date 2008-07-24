@@ -29,3 +29,10 @@ after "deploy:symlink", "symlink_database_yml"
 task :symlink_database_yml do
   run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"  
 end
+
+namespace :deploy do
+  desc "Restart mod_rails for this site"
+  task :restart do
+    run "touch #{current_path}/tmp/restart.txt"
+  end
+end
