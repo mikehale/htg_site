@@ -30,6 +30,15 @@ task :symlink_database_yml do
   run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"  
 end
 
+namespace :thin do
+  %w{start stop restart}.each {|action|
+    desc "#{action} thin"
+    task action.to_sym do
+      run "sudo thin #{action} --config #{current_path}/config/thin.yml"
+    end
+  }
+end
+
 namespace :deploy do
   # desc "Restart mod_rails for this site"
   task :restart do
