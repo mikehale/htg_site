@@ -31,8 +31,8 @@ task :symlink_database_yml do
 end
 
 namespace :deploy do
-  desc "Restart mod_rails for this site"
+  # desc "Restart mod_rails for this site"
   task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
+    # run "touch #{current_path}/tmp/restart.txt"
   end
 end
