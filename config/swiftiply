@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+NAME = 'swiftiply'
+CONFIG="/etc/#{NAME}.yml"
+PIDFILE = "/var/run/#{NAME}.pid"
+
+def pid
+  current_pid=`pgrep -f "#{NAME} -c #{CONFIG}"`.split.first
+  pidfile_pid=`cat #{PIDFILE}`.chomp
+  
+  if current_pid == ''
+    FileUtils::rm pidfile
+  elsif pidfile_pid != current_pid
+    `echo "#{current_pid}" > #{PIDFILE}`
+  end
+end
+
+def start
+  print "Starting #{NAME}:"
+  `swiftiply -c #{CONFIG}`
+  pid
+  puts
+end
+
+def stop
+  print "Stopping #{NAME}:"
+  `killall -9 #{NAME}`
+  pid
+  puts
+end
+
+case ARGV.first
+  when 'start': start
+  when 'stop': stop
+  when 'restart': stop ; restart
+  when 'pid': pid
+end
+
+unless %w{start stop restart pid}.include? ARGV.first
+  puts "Usage: #{NAME} {start|stop|restart|pid}"
+  exit 0
+end
