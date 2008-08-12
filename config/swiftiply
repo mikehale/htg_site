@@ -6,39 +6,38 @@ NAME = 'swiftiply'
 CONFIG="/etc/#{NAME}.yml"
 PIDFILE = "/var/run/#{NAME}.pid"
 
-def pid
-  current_pid=`pgrep -f "#{NAME} -c #{CONFIG}"`.split.first
-  pidfile_pid=`cat #{PIDFILE}`.chomp
+def update_pid
+  current_pid = `pgrep -o "#{NAME}"`.chomp
+  pidfile_pid = File.exists?(PIDFILE) ? File.read(PIDFILE).chomp : ''
   
   if current_pid == ''
-    FileUtils::rm pidfile
+    FileUtils::rm_rf PIDFILE
   elsif pidfile_pid != current_pid
     `echo "#{current_pid}" > #{PIDFILE}`
   end
 end
 
 def start
-  print "Starting #{NAME}:"
-  `swiftiply -c #{CONFIG}`
-  pid
+  print "Starting #{NAME}"
+  system "#{NAME} --config #{CONFIG} > /dev/null"
+  update_pid
   puts
 end
 
 def stop
-  print "Stopping #{NAME}:"
-  `killall -9 #{NAME}`
-  pid
+  print "Stopping #{NAME}"
+  system "kill -9 #{File.read(PIDFILE)}" if File.exists?(PIDFILE)
+  update_pid
   puts
 end
 
 case ARGV.first
   when 'start': start
   when 'stop': stop
-  when 'restart': stop ; restart
-  when 'pid': pid
+  when 'restart': stop ; start
 end
 
-unless %w{start stop restart pid}.include? ARGV.first
-  puts "Usage: #{NAME} {start|stop|restart|pid}"
+unless %w{start stop restart}.include? ARGV.first
+  puts "Usage: #{File.expand_path $0} {start|stop|restart}"
   exit 0
 end
