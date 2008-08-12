@@ -11,5 +11,5 @@ swiftiply: true
 adapter: rails
 user: deploy
 group: deploy
-pid: /var/run/thin/site.pid
-log: /var/log/thin/site.log
+# pid: /var/run/thin/site.pid
+# log: /var/log/thin/site.log
