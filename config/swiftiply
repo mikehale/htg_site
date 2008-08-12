@@ -1,43 +1,25 @@
 #!/usr/bin/env ruby
 
-require 'fileutils'
-
 NAME = 'swiftiply'
 CONFIG="/etc/#{NAME}.yml"
-PIDFILE = "/var/run/#{NAME}.pid"
 
-def update_pid
-  current_pid = `pgrep -o "#{NAME}"`.chomp
-  pidfile_pid = File.exists?(PIDFILE) ? File.read(PIDFILE).chomp : ''
-  
-  if current_pid == ''
-    FileUtils::rm_rf PIDFILE
-  elsif pidfile_pid != current_pid
-    `echo "#{current_pid}" > #{PIDFILE}`
-  end
-end
+require 'rubygems'
+require 'daemons'
 
-def start
-  print "Starting #{NAME}"
-  system "#{NAME} --config #{CONFIG} > /dev/null"
-  update_pid
-  puts
-end
+script_args = false
+daemon_args = ARGV.find_all {|e|
+  script_args = true if e == '--'
+  !script_args
+}
 
-def stop
-  print "Stopping #{NAME}"
-  system "kill -9 #{File.read(PIDFILE)}" if File.exists?(PIDFILE)
-  update_pid
-  puts
-end
+options = {
+  :app_name   => NAME,
+  :ARGV       => daemon_args + ['--', '--config', CONFIG, '--daemonize', 'n'],
+  :dir_mode   => :system,
+  :multiple   => false,
+  :ontop      => false,
+  :mode       => :exec,
+  :monitor    => false
+}
 
-case ARGV.first
-  when 'start': start
-  when 'stop': stop
-  when 'restart': stop ; start
-end
-
-unless %w{start stop restart}.include? ARGV.first
-  puts "Usage: #{File.expand_path $0} {start|stop|restart}"
-  exit 0
-end
+Daemons.run("/usr/bin/#{NAME}", options)
