@@ -40,8 +40,9 @@ namespace :thin do
 end
 
 namespace :deploy do
-  # desc "Restart mod_rails for this site"
-  task :restart do
-    # run "touch #{current_path}/tmp/restart.txt"
+  %w(start stop restart).each do |action|
+    task action.to_sym do
+      run "cd #{current_path} && sudo thin #{action} -C config/thin.yml"
+    end
   end
 end
