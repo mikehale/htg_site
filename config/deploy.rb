@@ -1,9 +1,12 @@
-set :application, "site"
-set :domain, "slice.halethegeek.com"
-set :repository, "git@github.com:mikehale/htg_site.git"
-set :deploy_to, "/var/www/apps/#{application}"
+set :default_stage, "production"
 
-set :user, "deploy"
+require 'capistrano/ext/multistage'
+require 'spacesuit/recipes/multistage_patch'
+require 'spacesuit/recipes/common'
+
+set :application, "site"
+set :repository, "git@github.com:mikehale/htg_site.git"
+
 set :use_sudo, false
 set :rails_env, "production" 
 set :scm, "git"
@@ -12,37 +15,18 @@ set :git_enable_submodules, 1
 set :keep_releases, 10
 default_run_options[:pty] = true
 
-role :web, domain
-role :app, domain
-role :db,  domain, :primary => true
-
-# after "deploy:update", "gems:install"
-# 
-# namespace :gems do
-#   task :install do
-#     sudo "sh -c'cd #{current_path} && rake gems:install'"
-#   end  
-# end
-
-after "deploy:symlink", "symlink_database_yml"
-
-task :symlink_database_yml do
-  run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"  
-end
-
 namespace :thin do
   %w{start stop restart}.each {|action|
     desc "#{action} thin"
     task action.to_sym do
-      run "sudo thin #{action} --config #{current_path}/config/thin.yml"
+      run "cd #{current_path} && 
+            sudo thin #{action} --config #{current_path}/config/thin.yml"
     end
   }
 end
 
 namespace :deploy do
   %w(start stop restart).each do |action|
-    task action.to_sym do
-      run "cd #{current_path} && sudo thin #{action} -C config/thin.yml"
-    end
+    task action.to_sym { thin.send action }
   end
 end

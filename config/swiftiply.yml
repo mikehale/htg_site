@@ -1,13 +1,8 @@
 cluster_address: 127.0.0.1
 cluster_port: 8000
-daemonize: true
 epoll: true
 epoll_descriptors: 8192
-# Map of incoming hostnames to outgoing backends
 map:
-    # Hostname to match
-  - incoming: localhost
-    # Address for thins to connect to
+  - incoming: slice.halethegeek.com
     outgoing: 127.0.0.1:8001
     redeployable: true
-    default: true

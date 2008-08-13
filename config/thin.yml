@@ -1,4 +1,5 @@
 --- 
+chdir: /var/www/apps/site/current
 address: 127.0.0.1
 port: 8001
 servers: 2
@@ -11,5 +12,5 @@ swiftiply: true
 adapter: rails
 user: deploy
 group: deploy
-# pid: /var/run/thin/site.pid
-# log: /var/log/thin/site.log
+pid: /var/run/thin/site.pid
+log: /var/log/thin/site.log

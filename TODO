@@ -1,0 +1,4 @@
+* send nginx logs to syslog
+* send thin logs to syslog
+* upgrade swiftiply to version that uses logging
+* send swiftiply logs to syslog

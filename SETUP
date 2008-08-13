@@ -1,0 +1,73 @@
+* install syslog-ng
+* append to /etc/syslog-ng/syslog-ng.conf:
+    filter f_htg_site { match("htg_site"); };
+    destination df_htg_site { file("/var/log/apps/htg_site.log"); };
+    log {
+    	source(s_all);
+    	filter(f_htg_site);
+    	destination(df_htg_site);
+    };
+
+* mkdir -p /var/log/apps
+* create /etc/logrotate.d/apps:
+  /var/log/apps/*.log {
+  	daily
+  	missingok
+  	rotate 60
+  	compress
+  	notifempty
+  	create 640 root adm
+  	sharedscripts
+  	postrotate
+      /usr/sbin/invoke-rc.d syslog-ng reload >/dev/null
+    endscript
+  }
+
+* append to /etc/logrotate.d/thin:
+  /var/log/thin/site*.log {
+    weekly
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    create 640 root adm
+    sharedscripts
+    postrotate
+      thin restart -C /etc/thin/site.yml
+    endscript
+  }
+
+* create /etc/thin/site.yml 
+  --- 
+  chdir: /var/www/apps/site/current
+  address: 127.0.0.1
+  port: 8001
+  servers: 1
+  timeout: 30
+  max_conns: 1024
+  environment: production
+  max_persistent_conns: 512
+  daemonize: true
+  swiftiply: true
+  adapter: rails
+  user: deploy
+  group: deploy
+  pid: /var/run/thin/site.pid
+  log: /var/log/thin/site.log
+
+* ensure /etc/swiftiply.yml contains:
+  cluster_address: 127.0.0.1
+  cluster_port: 8000
+  epoll: true
+  epoll_descriptors: 8192
+  user: swiftiply
+  group: nogroup
+  # Map of incoming hostnames to outgoing backends
+  map:
+
+* append to /etc/swiftiply.yml 
+    - incoming: slice.halethegeek.com
+      outgoing: 127.0.0.1:8001
+      redeployable: true
+      default: true
