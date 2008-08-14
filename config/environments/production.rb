@@ -1,6 +1,6 @@
 config.cache_classes = true
 config.logger = SyslogLogger.new('rails_site')
-config.logger.level = Logger::WARN
+config.logger.level = Logger::INFO
 
 config.action_controller.consider_all_requests_local = false
 config.action_controller.perform_caching             = true
