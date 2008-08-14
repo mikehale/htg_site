@@ -3,7 +3,8 @@
 # The production environment is meant for finished, "live" apps.
 # Code is not reloaded between requests
 config.cache_classes = true
-config.logger = SyslogLogger.new('rails_site')
+config.logger = SyslogLogger.new
+config.logger.level = Logger::WARN
 
 # Full error reports are disabled and caching is turned on
 config.action_controller.consider_all_requests_local = false
