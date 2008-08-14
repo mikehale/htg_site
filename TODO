@@ -2,6 +2,5 @@
 * link to current log
 * log to database
 
-* send thin logs to syslog
 * upgrade swiftiply to version that uses logging
 * send swiftiply logs to syslog

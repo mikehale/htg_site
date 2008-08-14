@@ -4,3 +4,4 @@ db/*sqlite3
 tmp/*
 vendor/rails
 deploy_history.txt
+*.tmproj
