@@ -1,6 +1,6 @@
 * disable logrotate
-* compress old logs
 * link to current log
+* log to database
 
 * send thin logs to syslog
 * upgrade swiftiply to version that uses logging

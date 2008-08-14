@@ -15,5 +15,7 @@ current_log_files.each {|source|
                   gsub(/#{year}\/#{month}\//,'').
                   gsub(/\/#{year}-#{month}-#{day}/,'')
                   
-  `ln -nfs #{source} #{target}`
+  command = "ln -nfs #{source} #{target}"
+  puts command
+  `#{command}`
 }

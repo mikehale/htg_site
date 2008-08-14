@@ -13,4 +13,4 @@ adapter: rails
 user: deploy
 group: deploy
 pid: /var/run/thin/site.pid
-log: /var/log/thin/site.log
+log: /var/log/thin/fifo/site
