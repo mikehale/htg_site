@@ -20,13 +20,15 @@ namespace :thin do
     desc "#{action} thin"
     task action.to_sym do
       run "cd #{current_path} && 
-            sudo thin #{action} --config #{current_path}/config/thin.yml"
+            sudo thin #{action} --config /etc/thin/site.yml"
     end
   }
 end
 
 namespace :deploy do
   %w(start stop restart).each do |action|
-    task action.to_sym { thin.send action }
+    task action.to_sym do 
+      thin.send action 
+    end
   end
 end
